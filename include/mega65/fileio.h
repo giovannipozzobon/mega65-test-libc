@@ -50,6 +50,19 @@ __attribute__((leaf))
 uint8_t
 open(char* filename);
 
+
+/**
+ * @brief Mount a D81 disk image to drive 0
+ * @param filename to attach
+ * @return File descriptor or `0xff` if error
+ */
+#ifdef __clang__
+__attribute__((leaf))
+#endif
+uint8_t
+hyppo_mount_d81_0(char* diskname);
+
+
 /**
  * @brief Read up to 512 bytes from file
  * @param buffer Input buffer
@@ -72,6 +85,19 @@ __attribute__((leaf))
 #endif
 uint8_t
 chdir(char* filename);
+
+/**
+ * @brief find the file
+ * @param filename 
+ * @return Error code (currently unused)
+ * @note Only accepts one filename 
+ */
+#ifdef __clang__
+__attribute__((leaf))
+#endif
+uint8_t
+findfile(char* filename);
+
 
 /**
  * @brief Change working directory to the root directory

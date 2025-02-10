@@ -8,7 +8,16 @@
 	.extern filenametoopen
 
     .section code_2,text
-	.public toggle_rom_write_protect, chdir, read512, open, closeall, close, chdirroot, gethyppoversion	
+	.public toggle_rom_write_protect, hyppo_mount_d81_0, chdir, findfile, read512, open, closeall, close, chdirroot, gethyppoversion	
+
+
+hyppo_mount_d81_0:
+	jsr copy_string_to_0100
+	jsr setname_0100	
+	lda #0x40
+	sta 0xd640
+	clv
+	rts
 
 
 toggle_rom_write_protect:
@@ -24,7 +33,7 @@ chdir:
 	;; Get pointer to file name
 	;sta ptr1+0
 	;stx ptr1+1	
-	jsr cc65_copy_ptr1_string_to_0100
+	jsr copy_string_to_0100
 	jsr setname_0100	
 
 	;; Find file
@@ -49,6 +58,26 @@ chdir_file_exists:
 	clv
 	;ldx #0x00
 	lda #0x00
+	rts
+
+
+
+findfile:
+	;; Get pointer to file name
+
+	jsr copy_string_to_0100
+	jsr setname_0100	
+
+	;; Find file
+	; Look for file on FAT file system via hypervisor calls
+	lda #0x34
+	sta 0xd640
+	clv
+	bcs file_exists
+
+	;; No such file.
+	lda #0xff
+file_exists:
 	rts
 
 
@@ -98,7 +127,7 @@ read512:
 	rts	
 
 
-cc65_copy_ptr1_string_to_0100:	
+copy_string_to_0100:	
     ;; Copy file name
 	phy
 	ldy #0
@@ -132,7 +161,7 @@ open:
 	;sta ptr1+0
 	;stx ptr1+1
 	
-	jsr cc65_copy_ptr1_string_to_0100
+	jsr copy_string_to_0100
 	jsr setname_0100	
 
 	;; Find file
